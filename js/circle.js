@@ -1,8 +1,8 @@
 class Circle{
 
   constructor(maxWidth, maxHeight, isBlue){
-    this.x = parseInt(Math.floor(Math.random() * Math.floor(maxWidth)));
-    this.y = parseInt(Math.floor(Math.random() * Math.floor(maxHeight)));
+    this.x = getRandomArbitrary(120, maxWidth-120);
+    this.y = getRandomArbitrary(120, maxHeight-120);
     this.r = getRandomArbitrary(30, 150);
     this.selected = false;
     const color = ['red', 'green', 'yellow', 'blue'];

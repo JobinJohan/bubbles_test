@@ -9,7 +9,7 @@ var level = 1;
 var timers = [];
 
 function setup() {
-  createCanvas(windowWidth, windowHeight-100);
+  createCanvas(windowWidth-100, windowHeight-100);
   noLoop();
 }
 
@@ -18,7 +18,7 @@ function draw() {
     background(220);
     fill(50);
     text("Score: " + score, 10, 20);
-    text("Life: " + life, windowWidth-100, 20);
+    text("Life: " + life, windowWidth-140, 20);
     text("Level: " + level, 10, 40);
 
     for(i=0;i<circles.length;++i){
@@ -26,9 +26,16 @@ function draw() {
     }
   }
   else if(ended){
+    circles=[];
     background(220);
     fill(50);
-    text("End of the game, your score is " + score, 10, 20);
+    textSize(40);
+    textAlign(CENTER, CENTER);
+    text("End of the game, your score is " + score, (windowWidth-140)/2, 300);
+    var button = createButton('Play again');
+    button.addClass('flat-button');
+    button.position((windowWidth-350)/2, 350);
+    button.mousePressed(function(){location.reload();});
 
 
   }
@@ -71,6 +78,9 @@ function start(){
   if(document.getElementById("mainMenu")!= null){
     document.getElementById("mainMenu").remove();
   }
+  if(document.getElementById("header")!=null){
+    document.getElementById("header").remove();
+  }
   startTimer();
   initCircles();
   started=true;
@@ -78,10 +88,10 @@ function start(){
 }
 
 function startTimer(){
-  var timeleft = 10;
+  var timeleft = 20;
   document.getElementById("timer").hidden=false;
   var downloadTimer = setInterval(function(){
-    document.getElementById("progressBar").value = 10 - --timeleft;
+    document.getElementById("progressBar").value = 20 - --timeleft;
     document.getElementById("remainingTime").innerHTML= timeleft;
     if(timeleft <= 0){
       clearInterval(downloadTimer);
@@ -95,16 +105,41 @@ function startTimer(){
 }
 
 function initCircles(){
-circles=[];
-  for(i=0;i<level*5;++i){
-    if(i<level){
-      var newCircle = new Circle(windowWidth-150, windowHeight-150, true);
+  circles=[];
+  var protection = 0;
+
+  // Try to get to 500
+  var k=0;
+  while (circles.length <=level*5) {
+    if(k<level){
+        var newCircle = new Circle(windowWidth-150, windowHeight-150, true);
+      }
+      else{
+        var newCircle = new Circle(windowWidth-150, windowHeight-150, false);
+      }
+
+    // Does it overlap any previous circles?
+    var overlapping = false;
+    for (var j = 0; j < circles.length; j++) {
+      var other = circles[j];
+      var d = dist(newCircle.getX(), newCircle.getY(), other.getX(), other.getY());
+      if (d < newCircle.getRadius() + other.getRadius()) {
+        overlapping = true;
+      }
     }
-    else{
-      var newCircle = new Circle(windowWidth-150, windowHeight-150, false);
+
+    // If not keep it!
+    if (!overlapping) {
+      k++;
+      circles.push(newCircle);
     }
-    circles.push(newCircle);
-    console.log(circles);
-  }
+
+    // Are we stuck?
+    protection++;
+    if (protection > 10000) {
+      break;
+    }
+}
+
 
 }
